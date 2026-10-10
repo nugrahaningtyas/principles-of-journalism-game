@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Principles of Journalism — Matching Pairs Game</title>
+<style>
+:root{
+  --ink:#170f33;
+  --ink-soft:#574c78;
+  --muted:#8b82ad;
+  --line:#ece5fa;
+  --paper:#fbf8ff;
+
+  /* energetic core palette */
+  --violet:#7c3aed;
+  --violet-deep:#5b21b6;
+  --pink:#ec4899;
+  --magenta:#d926a9;
+  --coral:#fb5607;
+  --amber:#f59e0b;
+  --teal:#0ea5a4;
+  --sky:#0ea5e9;
+  --blue:#2563eb;
+  --lime:#65a30d;
+  --green:#16a34a;
+  --red:#e11d48;
+
+  /* stage accent family (overridden per stage on <body>) */
+  --c-a:#fb5607;
+  --c-b:#f59e0b;
+  --c-soft:#fff3e8;
+  --c-line:#ffd0a8;
+  --c-deep:#9a3412;
+
+  --shadow:0 2px 4px rgba(49,29,94,.05), 0 12px 30px rgba(80,44,160,.13);
+  --shadow-pop:0 8px 22px rgba(124,58,237,.22);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(900px 520px at 4% -10%, #ffe0f0 0%, rgba(255,224,240,0) 60%),
+    radial-gradient(820px 500px at 100% -6%, #fff0d1 0%, rgba(255,240,209,0) 58%),
+    radial-gradient(760px 560px at 88% 104%, #ddf5ff 0%, rgba(221,245,255,0) 62%),
+    radial-gradient(700px 520px at 10% 108%, #e9e2ff 0%, rgba(233,226,255,0) 60%),
+    var(--paper);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  transition:background .5s ease;
+}
+/* per-stage accent families */
+body[data-stage="1"]{--c-a:#fb5607;--c-b:#f59e0b;--c-soft:#fff3e8;--c-line:#ffcfa4;--c-deep:#9a3412}
+body[data-stage="2"]{--c-a:#7c3aed;--c-b:#ec4899;--c-soft:#f6ecff;--c-line:#d9c2ff;--c-deep:#5b21b6}
+body[data-stage="3"]{--c-a:#0ea5a4;--c-b:#2563eb;--c-soft:#e4f8fb;--c-line:#a8e4ee;--c-deep:#0f5457}
+
+/* rainbow ribbon */
+.ribbon{
+  height:7px;width:100%;
+  background:linear-gradient(90deg,#fb5607,#f59e0b,#ffe45e,#16a34a,#0ea5e9,#7c3aed,#ec4899,#fb5607);
+  background-size:300% 100%;
+  animation:slide 14s linear infinite;
+}
+@keyframes slide{to{background-position:300% 0}}
+
+.wrap{max-width:1060px;margin:0 auto;padding:22px 16px 48px}
+
+/* ---------- masthead ---------- */
+.masthead{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;justify-content:space-between;margin-bottom:18px}
+.kicker{
+  display:inline-block;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;
+  color:#fff;margin:0 0 8px;padding:5px 11px;border-radius:999px;
+  background:linear-gradient(100deg,var(--pink),var(--violet) 55%,var(--sky));
+  box-shadow:0 4px 12px rgba(124,58,237,.28);
+}
+h1{
+  margin:0;font-size:clamp(26px,4.2vw,40px);line-height:1.05;letter-spacing:-1px;font-weight:800;
+  background:linear-gradient(96deg,#fb5607 0%,#ec4899 38%,#7c3aed 68%,#0ea5e9 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.masthead p.lede{margin:9px 0 0;color:var(--ink-soft);font-size:14.5px;max-width:56ch;line-height:1.55}
+.howto{
+  background:#fff;border:2px solid #efe7fd;border-radius:14px;padding:11px 15px;font-size:13px;
+  color:var(--ink-soft);box-shadow:var(--shadow);line-height:1.5;position:relative;overflow:hidden;
+}
+.howto::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;
+  background:linear-gradient(180deg,var(--pink),var(--amber))}
+.howto b{color:var(--violet-deep)}
+
+/* ---------- stage bar ---------- */
+.stagebar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.group{
+  background:#fff;border:2px solid var(--line);border-radius:16px;padding:10px 11px 11px;
+  box-shadow:var(--shadow);flex:1 1 240px;position:relative;
+}
+.group:nth-child(1){border-color:#ffd9b8}
+.group:nth-child(2){border-color:#e3d1ff}
+.group:nth-child(3){border-color:#bfeef4}
+.group.active{box-shadow:var(--shadow-pop)}
+.group.active:nth-child(1){background:linear-gradient(#fff,#fff6ed);border-color:#ffbf85}
+.group.active:nth-child(2){background:linear-gradient(#fff,#f9f2ff);border-color:#c9a9ff}
+.group.active:nth-child(3){background:linear-gradient(#fff,#eefbfd);border-color:#8fdde8}
+.group-label{
+  font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;font-weight:800;margin:0 0 8px;display:block;
+}
+.group:nth-child(1) .group-label{color:#c2410c}
+.group:nth-child(2) .group-label{color:#6d28d9}
+.group:nth-child(3) .group-label{color:#0e7490}
+.subs{display:flex;flex-wrap:wrap;gap:7px}
+.subbtn{
+  font:inherit;font-size:13px;font-weight:700;color:#463a6b;
+  background:#f5f2fd;border:1.5px solid #e8e0fa;border-radius:999px;
+  padding:7px 13px;cursor:pointer;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:transform .14s cubic-bezier(.34,1.56,.64,1),background .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+.subbtn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 14px rgba(80,44,160,.16);border-color:#cdb8f7}
+.subbtn:disabled{opacity:.5;cursor:not-allowed}
+.subbtn.active{color:#fff;border-color:transparent;box-shadow:0 6px 16px rgba(124,58,237,.3)}
+.group:nth-child(1) .subbtn.active{background:linear-gradient(100deg,#fb5607,#f59e0b)}
+.group:nth-child(2) .subbtn.active{background:linear-gradient(100deg,#ec4899,#7c3aed)}
+.group:nth-child(3) .subbtn.active{background:linear-gradient(100deg,#0ea5a4,#2563eb)}
+.subbtn.done{background:#e6fbef;border-color:#9ce5bd;color:#0f7a45}
+.subbtn.done.active{color:#fff;background:linear-gradient(100deg,#16a34a,#0ea5a4)}
+.subbtn .dot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.55}
+.subbtn.active .dot{opacity:1}
+
+/* ---------- panel ---------- */
+.panel{
+  background:#fff;border:2px solid #f0e9fd;border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:18px;position:relative;overflow:hidden;
+}
+.panel::after{
+  content:"";position:absolute;left:0;right:0;top:0;height:6px;
+  background:linear-gradient(90deg,var(--c-a),var(--c-b));
+}
+.panel-head{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:flex-start;
+  border-bottom:2px dashed var(--line);padding-bottom:14px;margin-bottom:14px}
+.round-stage{
+  display:inline-block;font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:800;
+  margin:0 0 7px;padding:4px 10px;border-radius:999px;
+  color:var(--c-deep);background:var(--c-soft);border:1.5px solid var(--c-line);
+}
+h2{margin:0;font-size:clamp(18px,2.5vw,23px);color:var(--ink);line-height:1.22;font-weight:800;letter-spacing:-.3px}
+.round-hint{margin:7px 0 0;font-size:13.5px;color:var(--ink-soft);max-width:62ch;line-height:1.5}
+.stats{display:flex;gap:8px;flex:0 0 auto}
+.stat{min-width:76px;text-align:center;border-radius:13px;padding:8px 10px;border:2px solid var(--line);background:#faf8ff}
+.stat:nth-child(1){border-color:#ffe0c2;background:#fff8f1}
+.stat:nth-child(2){border-color:#e6d8ff;background:#fbf7ff}
+.stat:nth-child(3){border-color:#c8ecf7;background:#f2fdff}
+.stat span{display:block;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.4px}
+.stat:nth-child(1) span{color:#c2410c}
+.stat:nth-child(2) span{color:#6d28d9}
+.stat:nth-child(3) span{color:#0e7490}
+.stat small{display:block;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-top:2px;font-weight:700}
+
+.feedback{min-height:23px;font-size:13.5px;font-weight:700;color:var(--muted);margin:0 0 12px;transition:color .15s ease}
+.feedback.ok{color:#0f7a45}
+.feedback.err{color:#c81e4a}
+.feedback.info{color:#6d28d9}
+
+/* ---------- two-column board ---------- */
+.board{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}
+.col{display:flex;flex-direction:column;gap:10px;min-width:0}
+.col-head{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;
+  padding:8px 10px;border-radius:999px;border:2px solid var(--line);background:#faf8ff;color:var(--muted);
+  position:sticky;top:8px;z-index:3;
+}
+.col-head .hdot{width:8px;height:8px;border-radius:50%;background:currentColor;flex:0 0 auto}
+.col-left .col-head{color:var(--c-deep);background:var(--c-soft);border-color:var(--c-line)}
+.col-right .col-head{color:#6d28d9;background:#f7f0ff;border-color:#e0cfff}
+.col-body{display:grid;grid-auto-rows:1fr;gap:10px;flex:1 1 auto;min-width:0}
+
+.card{
+  position:relative;border-radius:15px;padding:24px 14px 15px;min-height:92px;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  cursor:pointer;user-select:none;
+  border:2px solid #ece7f8;background:#fff;
+  box-shadow:0 2px 5px rgba(49,29,94,.05);
+  transition:transform .16s cubic-bezier(.34,1.56,.64,1),box-shadow .18s ease,border-color .18s ease,background .18s ease;
+}
+.card:hover{transform:translateY(-3px) scale(1.012);box-shadow:var(--shadow-pop);border-color:var(--c-line)}
+.card .tag{
+  position:absolute;top:8px;left:12px;font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;
+  font-weight:800;color:var(--muted);
+}
+.card.principle{
+  background:linear-gradient(135deg,#fff 45%,var(--c-soft));
+  border-color:var(--c-line);text-align:left;justify-content:flex-start;
+}
+.card.principle .tag{color:var(--c-a)}
+.card.principle .txt{font-size:17.5px;font-weight:800;color:var(--c-deep);letter-spacing:-.3px;line-height:1.22}
+.card.principle::after{
+  content:"";position:absolute;left:14px;right:14px;bottom:9px;height:4px;border-radius:4px;
+  background:linear-gradient(90deg,var(--c-a),var(--c-b));
+}
+.card.clue{align-items:flex-start;justify-content:flex-start;background:linear-gradient(#fff,#fdfbff);border-color:#efe9fa}
+.card.clue .tag{color:#a78bfa}
+.card.clue .txt{font-size:13.5px;color:var(--ink-soft);line-height:1.55;text-align:left}
+.card.clue:hover{border-color:#d9c2ff;background:linear-gradient(#fff,#f8f3ff)}
+
+.card.selected{
+  border-color:var(--c-a);
+  background:linear-gradient(135deg,var(--c-soft),#fff);
+  box-shadow:0 0 0 4px rgba(124,58,237,.18),var(--shadow-pop);
+  transform:translateY(-3px) scale(1.02);
+}
+.card.clue.selected{border-color:#a855f7;background:linear-gradient(135deg,#f7f0ff,#fff);box-shadow:0 0 0 4px rgba(168,85,247,.18),var(--shadow-pop)}
+.card.matched{
+  background:linear-gradient(135deg,#e7fdf1,#c9f7df);border-color:#4ade80;cursor:default;
+  box-shadow:0 4px 14px rgba(22,163,74,.2);transform:none;animation:pop .3s ease;
+}
+.card.matched .txt{color:#065f46}
+.card.matched .tag{color:#0f7a45}
+.card.matched::before{
+  content:"\2713";position:absolute;top:7px;right:11px;color:#16a34a;font-weight:800;font-size:16px;
+}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.05)}100%{transform:scale(1)}}
+.card.wrong{
+  background:linear-gradient(135deg,#ffe8ee,#ffd4e0);border-color:#fb7185;animation:shake .45s ease;
+}
+.card.wrong .txt{color:#9f1239}
+.card.wrong::before{content:"\2715";position:absolute;top:7px;right:11px;color:#e11d48;font-weight:800;font-size:15px}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  18%{transform:translateX(-7px) rotate(-.6deg)}
+  38%{transform:translateX(7px) rotate(.6deg)}
+  58%{transform:translateX(-5px)}
+  78%{transform:translateX(5px)}
+}
+
+/* ---------- mobile selection bar ---------- */
+.selbar{
+  display:none;position:fixed;left:12px;right:12px;bottom:12px;z-index:30;
+  align-items:center;gap:10px;
+  background:linear-gradient(100deg,#ec4899,#7c3aed);color:#fff;
+  border-radius:14px;padding:10px 12px;font-size:12.5px;line-height:1.4;
+  box-shadow:0 12px 30px rgba(80,44,160,.36);
+}
+.selbar .sb-tag{
+  flex:0 0 auto;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;
+  background:rgba(255,255,255,.22);border-radius:999px;padding:4px 8px;
+}
+.selbar .sb-text{
+  flex:1 1 auto;min-width:0;font-weight:700;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.selbar .sb-clear{
+  flex:0 0 auto;font:inherit;font-size:11.5px;font-weight:700;color:#fff;cursor:pointer;
+  background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.5);border-radius:999px;padding:5px 10px;
+}
+
+/* ---------- controls / recap ---------- */
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:17px}
+.btn{
+  font:inherit;font-size:13.5px;font-weight:700;border-radius:12px;padding:11px 18px;cursor:pointer;
+  border:2px solid #e8e0fa;background:#fff;color:var(--violet-deep);
+  transition:transform .14s cubic-bezier(.34,1.56,.64,1),box-shadow .16s ease,background .16s ease;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(80,44,160,.16);border-color:#cdb8f7}
+.btn.primary{
+  background:linear-gradient(100deg,#ec4899,#7c3aed);border-color:transparent;color:#fff;
+  box-shadow:0 6px 18px rgba(124,58,237,.32);
+}
+.btn.primary:hover{box-shadow:0 10px 24px rgba(124,58,237,.4)}
+.btn.hidden{display:none}
+
+.recap{margin-top:17px}
+.recap-card{border:2px solid #a7e6cd;background:linear-gradient(150deg,#f0fdf6,#fff);border-radius:15px;padding:15px 17px;
+  box-shadow:0 6px 18px rgba(22,163,74,.1)}
+.recap-title{margin:0 0 11px;font-size:15px;font-weight:800;color:#0f7a45}
+.recap-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.recap-list li{font-size:13px;color:var(--ink-soft);line-height:1.55;padding-left:12px;position:relative}
+.recap-list li::before{content:"";position:absolute;left:0;top:5px;bottom:5px;width:4px;border-radius:4px;
+  background:linear-gradient(180deg,var(--pink),var(--violet))}
+.recap-list b{color:var(--violet-deep)}
+.recap-list em{color:var(--muted);font-style:normal;font-size:12px;display:block;margin-top:2px}
+.footer{margin-top:22px;text-align:center;font-size:12px;color:var(--muted);line-height:1.7}
+.footer b{color:var(--ink-soft)}
+
+/* ---------- tablet ---------- */
+@media (max-width:820px){
+  .card.principle .txt{font-size:16px}
+  .card.clue .txt{font-size:13px}
+  .card{padding:22px 11px 14px}
+}
+
+/* ---------- mobile: stack the two columns ---------- */
+@media (max-width:700px){
+  .wrap{padding:16px 12px 84px}
+  .panel{padding:14px}
+  .stat{min-width:64px;padding:7px 8px}
+  .board{grid-template-columns:1fr;gap:14px}
+  .col-body{grid-auto-rows:auto}
+  .col-left .col-head,.col-right .col-head{position:static}
+  .card{min-height:0;padding:22px 12px 14px}
+  .card.principle .txt{font-size:17px}
+  .card.clue .txt{font-size:13.5px}
+  .stats{width:100%;justify-content:space-between}
+  h1{font-size:29px}
+  .selbar.show{display:flex}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body data-stage="1">
+<div class="ribbon"></div>
+<div class="wrap">
+  <header class="masthead">
+    <div>
+      <span class="kicker">Newsroom training · Matching pairs</span>
+      <h1>Principles of Journalism</h1>
+      <p class="lede">Master the 10 principles of journalism across three stages: recognition, case analysis, then full recall. Tap a principle on the left, then tap its match on the right.</p>
+    </div>
+    <div class="howto">
+      <b>How to play:</b> principles sit on the left, their meanings or cases on the right.<br>
+      Tap a card on one side, then its partner on the other.<br>
+      A correct pair locks green. A wrong pair shakes and clears.
+    </div>
+  </header>
+
+  <nav class="stagebar" id="stagebar" aria-label="Stages"></nav>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="round-stage" id="roundStage"></p>
+        <h2 id="roundTitle"></h2>
+        <p class="round-hint" id="roundHint"></p>
+      </div>
+      <div class="stats">
+        <div class="stat"><span id="statPairs">0/3</span><small>Pairs</small></div>
+        <div class="stat"><span id="statMoves">0</span><small>Moves</small></div>
+        <div class="stat"><span id="statTime">0:00</span><small>Time</small></div>
+      </div>
+    </div>
+
+    <p class="feedback" id="feedback" aria-live="polite"></p>
+    <div class="board" id="board"></div>
+
+    <div class="controls">
+      <button class="btn" id="restartBtn" type="button">Restart this round</button>
+      <button class="btn primary hidden" id="nextBtn" type="button">Next round &rarr;</button>
+    </div>
+
+    <div class="recap" id="recap" aria-live="polite"></div>
+  </section>
+
+  <p class="footer"><b>10 principles · 3 stages · 6 rounds</b><br>
+  Verification · Objectivity · Originality · Completeness · Transparency · Fairness · Restraint · Humanity · Accountability · Empowerment</p>
+</div>
+
+<div class="selbar" id="selbar" aria-live="polite">
+  <span class="sb-tag">Selected</span>
+  <span class="sb-text" id="selbarText"></span>
+  <button class="sb-clear" id="selbarClear" type="button">Clear</button>
+</div>
+<script>
+(function () {
+  "use strict";
+
+  /* ------------------------------------------------------------------
+     1. CONTENT — the 10 principles, their meanings, and newsroom cases
+     ------------------------------------------------------------------ */
+  var PRINCIPLES = {
+    1: { name: "Verification",
+         def: "Making sure that the information is true and correct before it is published or broadcast." },
+    2: { name: "Objectivity",
+         def: "Reporting without favoring one side, keeping the reporter's own bias out of the story." },
+    3: { name: "Originality",
+         def: "Relying on your own work and reporting, never copy-pasting someone else's material." },
+    4: { name: "Completeness",
+         def: "Telling the whole story, not just a part of it." },
+    5: { name: "Transparency",
+         def: "Telling readers clearly whom the reporter has interviewed and how the story was gathered." },
+    6: { name: "Fairness",
+         def: "Giving the facts of both sides, so every side gets a fair chance to be heard." },
+    7: { name: "Restraint",
+         def: "Stopping the reporting or production of news when it would bring bad impacts to readers or society." },
+    8: { name: "Humanity",
+         def: "Treating the people inside a story with respect and care." },
+    9: { name: "Accountability",
+         def: "Being responsible for the story you produce, and holding people in power to account for their controlling actions." },
+    10:{ name: "Empowerment",
+         def: "Giving encouragement and support to those who do not have it — a voice and a platform they lack." }
+  };
+
+  /* One short newsroom situation per principle. Each case points to ONE principle only. */
+  var CASES = {
+    1: "A photo of a collapsed bridge is going viral. Before publishing it, the reporter checks the date embedded in the image, confirms the location with residents, and calls the police to ask whether the collapse really happened. Nothing goes out until the facts are confirmed.",
+    2: "A reporter personally supports one candidate in the election. Her article describes both campaign rallies in the same measured tone, and her own opinion never appears in the text.",
+    3: "Instead of lifting paragraphs from a rival outlet's investigation, the reporter goes back to the original documents, makes her own calls to sources, and writes the story herself.",
+    4: "A draft explains only the first day of a long land dispute. The editor asks for the earlier causes, the people affected later, and what happened after the deal was signed, so readers get the whole story instead of a fragment.",
+    5: "The article ends by naming every person the reporter spoke to, listing the documents used, and explaining that one source stayed anonymous and why.",
+    6: "A company is accused of polluting a river. The story prints the accusations in full, then gives the company the same amount of space to answer them.",
+    7: "The photos from the accident are shocking and would certainly attract more clicks. The newsroom decides not to publish them, because they would cause needless harm to the readers and to the families.",
+    8: "When the interview with the grieving mother becomes too much for her, the reporter switches off the camera, offers her a break, and asks whether she still wants to continue.",
+    9: "After the article turns out to contain an error, the outlet corrects it openly and explains the mistake. The same reporter keeps pressing the minister who tried to hide the public records, refusing to back off.",
+    10:"A village of farmers that never appears in the news gets a feature that shares their knowledge in their own words, giving them the voice and the platform they did not have before."
+  };
+
+  /* ------------------------------------------------------------------
+     2. ROUND MAP — the exact stage structure
+     ------------------------------------------------------------------ */
+  var ROUNDS = [
+    { key:"1.1", stageLabel:"Stage 1 · Sub-stage 1", short:"Sub-stage 1.1",
+      title:"Verification · Objectivity · Originality",
+      hint:"Recognition level — match each principle with its meaning.",
+      ids:[1,2,3], clue:"def" },
+
+    { key:"1.2", stageLabel:"Stage 1 · Sub-stage 2", short:"Sub-stage 1.2",
+      title:"Completeness · Transparency · Fairness",
+      hint:"Recognition level — match each principle with its meaning.",
+      ids:[4,5,6], clue:"def" },
+
+    { key:"1.3", stageLabel:"Stage 1 · Sub-stage 3", short:"Sub-stage 1.3",
+      title:"Restraint · Humanity · Accountability · Empowerment",
+      hint:"Recognition level — match each principle with its meaning.",
+      ids:[7,8,9,10], clue:"def" },
+
+    { key:"2.1", stageLabel:"Stage 2 · Sub-stage 1", short:"Sub-stage 2.1",
+      title:"Verification · Objectivity · Originality · Completeness · Transparency",
+      hint:"Understanding level — read each newsroom case and decide which principle it demonstrates.",
+      ids:[1,2,3,4,5], clue:"case" },
+
+    { key:"2.2", stageLabel:"Stage 2 · Sub-stage 2", short:"Sub-stage 2.2",
+      title:"Fairness · Restraint · Humanity · Accountability · Empowerment",
+      hint:"Understanding level — read each newsroom case and decide which principle it demonstrates.",
+      ids:[6,7,8,9,10], clue:"case" },
+
+    { key:"3", stageLabel:"Stage 3", short:"Stage 3",
+      title:"All 10 principles — mixed recall",
+      hint:"Memory and comprehension — principles, meanings and cases are mixed across all 10 principles.",
+      ids:[1,2,3,4,5,6,7,8,9,10], clue:"mix" }
+  ];
+
+  /* Stage 3 mixes meanings and cases: odd ids get the meaning, even ids get a case */
+  var MIX_KIND = { 1:"def", 2:"case", 3:"def", 4:"case", 5:"def",
+                   6:"case", 7:"def", 8:"case", 9:"def", 10:"case" };
+
+  var GROUPS = [
+    { label:"Stage 1 · Recognition",    rounds:["1.1","1.2","1.3"] },
+    { label:"Stage 2 · Case analysis",  rounds:["2.1","2.2"] },
+    { label:"Stage 3 · Full recall",    rounds:["3"] }
+  ];
+
+  /* ------------------------------------------------------------------
+     3. STATE + DOM
+     ------------------------------------------------------------------ */
+  var state = {
+    ri: 0,
+    unlocked: 0,
+    selectedEl: null,
+    lock: false,
+    moves: 0,
+    matched: 0,
+    seconds: 0,
+    timer: null,
+    finished: false,
+    done: {}
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var board = $("board");
+  var stagebar = $("stagebar");
+  var feedback = $("feedback");
+  var recap = $("recap");
+  var nextBtn = $("nextBtn");
+  var restartBtn = $("restartBtn");
+  var selbar = $("selbar");
+  var selbarText = $("selbarText");
+  var selbarClear = $("selbarClear");
+
+  /* ------------------------------------------------------------------
+     4. HELPERS
+     ------------------------------------------------------------------ */
+  function shuffle(arr) {
+    var a = arr.slice(), i, j, t;
+    for (i = a.length - 1; i > 0; i--) {
+      j = Math.floor(Math.random() * (i + 1));
+      t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function fmtTime(s) {
+    var m = Math.floor(s / 60), r = s % 60;
+    return m + ":" + (r < 10 ? "0" : "") + r;
+  }
+
+  function clueKind(round, id) {
+    if (round.clue === "def") return "def";
+    if (round.clue === "case") return "case";
+    return MIX_KIND[id];
+  }
+
+  function rightColumnLabel(round) {
+    if (round.clue === "case") return "Case scenarios";
+    if (round.clue === "mix") return "Meanings & cases";
+    return "Meanings";
+  }
+
+  function roundIndex(key) {
+    for (var i = 0; i < ROUNDS.length; i++) if (ROUNDS[i].key === key) return i;
+    return 0;
+  }
+
+  function say(msg, kind) {
+    feedback.textContent = msg || "";
+    feedback.className = "feedback" + (kind ? " " + kind : "");
+  }
+
+  function hideSelbar() {
+    selbar.classList.remove("show");
+    selbarText.textContent = "";
+  }
+
+  function showSelbar(card) {
+    var tag = card.getAttribute("data-kind") === "principle" ? "Principle" : "Clue";
+    selbarText.textContent = tag + " · " + card.querySelector(".txt").textContent;
+    selbar.classList.add("show");
+  }
+
+  function stopTimer() {
+    if (state.timer) { clearInterval(state.timer); state.timer = null; }
+  }
+
+  function startTimer() {
+    stopTimer();
+    state.timer = setInterval(function () {
+      state.seconds++;
+      $("statTime").textContent = fmtTime(state.seconds);
+    }, 1000);
+  }
+
+  /* ------------------------------------------------------------------
+     5. STAGE BAR
+     ------------------------------------------------------------------ */
+  function buildStageBar() {
+    stagebar.innerHTML = "";
+    GROUPS.forEach(function (group) {
+      var box = document.createElement("div");
+      box.className = "group";
+      group.rounds.forEach(function (k) {
+        if (roundIndex(k) === state.ri) box.className += " active";
+      });
+
+      var lab = document.createElement("span");
+      lab.className = "group-label";
+      lab.textContent = group.label;
+      box.appendChild(lab);
+
+      var subs = document.createElement("div");
+      subs.className = "subs";
+
+      group.rounds.forEach(function (k) {
+        var idx = roundIndex(k);
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "subbtn";
+        b.innerHTML = '<span class="dot"></span>' + ROUNDS[idx].short;
+        if (state.done[k]) b.className += " done";
+        if (idx === state.ri) b.className += " active";
+        if (idx > state.unlocked) {
+          b.disabled = true;
+          b.title = "Finish the previous sub-stage to unlock this one";
+        }
+        b.addEventListener("click", function () {
+          if (idx > state.unlocked) {
+            say("Locked — finish the previous sub-stage first.", "info");
+            return;
+          }
+          startRound(idx);
+        });
+        subs.appendChild(b);
+      });
+
+      box.appendChild(subs);
+      stagebar.appendChild(box);
+    });
+  }
+
+  /* ------------------------------------------------------------------
+     6. ROUND LIFECYCLE
+     ------------------------------------------------------------------ */
+  function startRound(idx) {
+    var round = ROUNDS[idx];
+    document.body.setAttribute("data-stage", round.key.charAt(0));  // per-stage colour family
+    state.ri = idx;
+    state.selectedEl = null;
+    state.lock = false;
+    state.moves = 0;
+    state.matched = 0;
+    state.seconds = 0;
+    state.finished = false;
+
+    $("roundStage").textContent = round.stageLabel;
+    $("roundTitle").textContent = round.title;
+    $("roundHint").textContent = round.hint +
+      "  Principles are listed on the left; their " +
+      (round.clue === "case" ? "cases" : round.clue === "mix" ? "meanings and cases" : "meanings") +
+      " are on the right. Tap a card on one side, then its partner on the other.";
+    $("statPairs").textContent = "0/" + round.ids.length;
+    $("statMoves").textContent = "0";
+    $("statTime").textContent = "0:00";
+    recap.innerHTML = "";
+    nextBtn.className = "btn primary hidden";
+    nextBtn.textContent = (idx === ROUNDS.length - 1) ? "Finish" : "Next round \u2192";
+    hideSelbar();
+    say("", "");
+
+    renderBoard(round);
+    buildStageBar();
+    startTimer();
+  }
+
+  function makeCard(pid, kind, text) {
+    var el = document.createElement("div");
+    el.className = "card " + kind;
+    el.setAttribute("role", "button");
+    el.setAttribute("tabindex", "0");
+    el.setAttribute("data-pid", String(pid));
+    el.setAttribute("data-kind", kind);
+    el.innerHTML = '<span class="tag">' + (kind === "principle" ? "Principle" : "Clue") +
+                   '</span><span class="txt"></span>';
+    el.querySelector(".txt").textContent = text;
+    el.addEventListener("click", function () { onPick(el); });
+    el.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onPick(el); }
+    });
+    return el;
+  }
+
+  function addColumn(side, headLabel, cards) {
+    var col = document.createElement("div");
+    col.className = "col col-" + side;
+
+    var head = document.createElement("div");
+    head.className = "col-head";
+    head.innerHTML = '<span class="hdot"></span>';
+    var span = document.createElement("span");
+    span.textContent = headLabel;
+    head.appendChild(span);
+    col.appendChild(head);
+
+    var body = document.createElement("div");
+    body.className = "col-body";
+    cards.forEach(function (c) { body.appendChild(c); });
+    col.appendChild(body);
+
+    board.appendChild(col);
+  }
+
+  function renderBoard(round) {
+    // each column is shuffled on its own, so the two sides never line up
+    var leftCards = shuffle(round.ids).map(function (id) {
+      return makeCard(id, "principle", PRINCIPLES[id].name);
+    });
+    var rightCards = shuffle(round.ids).map(function (id) {
+      var k = clueKind(round, id);
+      return makeCard(id, "clue", (k === "def" ? PRINCIPLES[id].def : CASES[id]));
+    });
+
+    board.innerHTML = "";
+    addColumn("left", "Principles", leftCards);
+    addColumn("right", rightColumnLabel(round), rightCards);
+  }
+
+  function deselect(el) {
+    if (!el) return;
+    el.classList.remove("selected");
+    state.selectedEl = null;
+    hideSelbar();
+  }
+
+  function onPick(el) {
+    if (state.lock || state.finished) return;
+    if (el.classList.contains("matched")) return;
+
+    if (el === state.selectedEl) { deselect(el); return; }
+
+    if (!state.selectedEl) {
+      state.selectedEl = el;
+      el.classList.add("selected");
+      showSelbar(el);
+      say("Now tap the card that belongs with it on the other side.", "info");
+      return;
+    }
+
+    var a = state.selectedEl, b = el;
+    state.moves++;
+    $("statMoves").textContent = String(state.moves);
+
+    var isPair = (a.getAttribute("data-pid") === b.getAttribute("data-pid")) &&
+                 (a.getAttribute("data-kind") !== b.getAttribute("data-kind"));
+
+    if (isPair) {
+      a.classList.remove("selected");
+      a.classList.add("matched");
+      b.classList.add("matched");
+      state.selectedEl = null;
+      hideSelbar();
+      state.matched++;
+      $("statPairs").textContent = state.matched + "/" + ROUNDS[state.ri].ids.length;
+      say("Correct — that pair belongs together.", "ok");
+      if (state.matched === ROUNDS[state.ri].ids.length) finishRound();
+    } else {
+      state.lock = true;
+      b.classList.add("selected");
+      a.classList.add("wrong");
+      b.classList.add("wrong");
+      showSelbar(b);
+      say("Not a match. Read the clue again and think about which principle it really describes.", "err");
+      setTimeout(function () {
+        a.classList.remove("wrong", "selected");
+        b.classList.remove("wrong", "selected");
+        state.selectedEl = null;
+        state.lock = false;
+        hideSelbar();
+        if (!state.finished) say("Keep going.", "info");
+      }, 760);
+    }
+  }
+
+  function finishRound() {
+    var round = ROUNDS[state.ri];
+    state.finished = true;
+    stopTimer();
+    state.done[round.key] = true;
+    if (state.ri + 1 > state.unlocked) state.unlocked = Math.min(state.ri + 1, ROUNDS.length - 1);
+
+    say("Sub-stage complete — all " + round.ids.length + " pairs matched in " +
+        state.moves + " moves and " + fmtTime(state.seconds) + ".", "ok");
+
+    buildStageBar();
+
+    var items = round.ids.map(function (id) {
+      var k = clueKind(round, id);
+      var clueText = (k === "def" ? PRINCIPLES[id].def : CASES[id]);
+      var tag = (k === "def" ? "Meaning" : "Case");
+      return "<li><b>" + PRINCIPLES[id].name + "</b> " +
+             "<em>" + tag + " used in this round:</em>" + clueText + "</li>";
+    }).join("");
+
+    var last = (state.ri === ROUNDS.length - 1);
+    recap.innerHTML =
+      '<div class="recap-card"><p class="recap-title">' +
+      (last ? "You finished all 3 stages — all 10 principles of journalism."
+            : "Round complete \u2713 Here is what you just matched") +
+      "</p><ul class=\"recap-list\">" + items + "</ul></div>";
+
+    if (!last) {
+      nextBtn.classList.remove("hidden");
+    } else {
+      recap.innerHTML += '<div class="recap-card" style="margin-top:12px">' +
+        '<p class="recap-title">Full recall finished</p>' +
+        "<ul class=\"recap-list\"><li>You have now recognised, understood and recalled " +
+        "verification, objectivity, originality, completeness, transparency, fairness, " +
+        "restraint, humanity, accountability and empowerment.</li></ul></div>";
+    }
+  }
+
+  /* ------------------------------------------------------------------
+     7. CONTROLS
+     ------------------------------------------------------------------ */
+  restartBtn.addEventListener("click", function () { startRound(state.ri); });
+
+  selbarClear.addEventListener("click", function () { deselect(state.selectedEl); });
+
+  nextBtn.addEventListener("click", function () {
+    var nxt = state.ri + 1;
+    if (nxt < ROUNDS.length) {
+      if (nxt > state.unlocked) {
+        say("Finish this sub-stage first.", "info");
+        return;
+      }
+      startRound(nxt);
+    }
+  });
+
+  /* ------------------------------------------------------------------
+     8. GO
+     ------------------------------------------------------------------ */
+  startRound(0);
+})();
+
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
